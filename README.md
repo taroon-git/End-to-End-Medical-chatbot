@@ -12,3 +12,5 @@ source llmapp/bin/activate
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
+
+- Need to run store_index.py  for the first time to store the data into pinecone db.

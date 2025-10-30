@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cute Dark Chat UI</title>
+
+  <!-- Bootstrap (required) -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Your Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="popup-overlay">
+  <section class="gradient-custom">
+    <div class="container py-5">
+
+      <div class="row">
+
+        <!-- LEFT USERS LIST -->
+        <div class="col-md-6 col-lg-5 col-xl-5 mb-4 mb-md-0">
+          <!-- <h5 class="font-weight-bold mb-3 text-center text-white">AI Doctor</h5> -->
+
+          <div class="card mask-custom">
+            <div class="card-body">
+              <ul class="list-unstyled mb-0">
+
+                <!-- Example contact (static) -->
+                <li class="p-2 border-bottom user-item">
+                  <a href="#" class="d-flex justify-content-between link-light">
+                    <div class="d-flex flex-row">
+                      <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-8.webp" class="rounded-circle me-3" width="50">
+                      <div>
+                        <p class="fw-bold mb-0">Doctor AI</p>
+                        <p class="small text-white mb-0">Ask me anything about health.</p>
+                      </div>
+                    </div>
+                    <span class="badge bg-success">Online</span>
+                  </a>
+                </li>
+
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT CHAT AREA -->
+        <div class="col-md-6 col-lg-7 col-xl-7">
+
+          <ul class="list-unstyled text-white chat-box" id="chatbox">
+
+            <!-- Chat messages will be appended here dynamically -->
+
+          </ul>
+
+          <!-- Message Input -->
+          <div class="mt-3">
+            <textarea class="form-control" id="message" rows="2" placeholder="Write a message..."></textarea>
+            <button id="send-btn" class="btn btn-light btn-lg btn-rounded mt-3 float-end">Send</button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+</div>
+
+
+
+<!-- ✅ Chat Script -->
+<script>
+const chatbox = document.getElementById("chatbox");
+const messageInput = document.getElementById("message");
+const sendBtn = document.getElementById("send-btn");
+
+// Append message to chat UI
+function appendMessage(sender, text) {
+    chatbox.innerHTML += `
+      <li class="d-flex mb-4">
+        <div class="card mask-custom w-100">
+          <div class="card-body">
+            <p class="fw-bold mb-1">${sender}</p>
+            <p>${text}</p>
+          </div>
+        </div>
+      </li>`;
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+// Send message to backend
+function sendMessage() {
+    const message = messageInput.value;
+    if (!message.trim()) return;
+
+    appendMessage("You", message);
+
+    fetch("/get", {
+        method: "POST",
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        body: "msg=" + message
+    })
+    .then(res => res.text())
+    .then(reply => {
+        appendMessage("Doctor AI", reply);
+    });
+
+    messageInput.value = "";
+}
+
+// Send on button click
+sendBtn.addEventListener("click", sendMessage);
+
+// Send on Enter key
+messageInput.addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+    }
+});
+</script>
+
+</body>
+</html>
